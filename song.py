@@ -44,9 +44,10 @@ class Song():
         number of words in the song
     '''
     
-    def __init__(self, songID):
-        self.songID = songID
-        self.info()
+    def __init__(self, name, artist):
+        self.name = name
+        self.artist = artist
+        #self.info()
         self.request_song_info()
         pass
     
@@ -72,7 +73,12 @@ class Song():
         response = requests.get(search_url, data=data, headers=headers)
         json = response.json()
         self.genius_name = json['response']['hits'][0]['result']['full_title']
-        self.url = json['response']['hits'][0]['result']['url']    
+        for hit in json['response']['hits']:
+            if artist_name.lower() in hit['result']['primary_artist']['name'].lower():
+                remote_song_info = hit
+                break
+        if remote_song_info:
+            self.url = remote_song_info['result']['url']
     
     def lyrics(self):
         page = requests.get(self.url)
